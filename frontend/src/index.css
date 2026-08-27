@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+}
+
+::selection {
+  @apply bg-brick/20;
+}
+
+.ticket-stub {
+  position: relative;
+}
+.ticket-stub::before,
+.ticket-stub::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: theme('colors.paper.DEFAULT');
+  border-radius: 9999px;
+  transform: translateY(-50%);
+}
+.ticket-stub::before { left: -8px; }
+.ticket-stub::after { right: -8px; }
+
+@media print {
+  body {
+    background: white;
+  }
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}
