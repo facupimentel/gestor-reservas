@@ -15,6 +15,14 @@ function toDateInputValue(date) {
   return `${y}-${m}-${d}`;
 }
 
+// Calcula el día de la semana directamente de los componentes de la fecha (YYYY-MM-DD),
+// sin pasar por conversión de zona horaria, para que sea consistente sin importar dónde
+// esté el navegador del cliente.
+function weekdayFromDateString(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).getDay();
+}
+
 export default function BookingPage() {
   const [config, setConfig] = useState(null);
   const [services, setServices] = useState([]);
@@ -96,14 +104,14 @@ export default function BookingPage() {
       <header className="border-b border-ink/10">
         <div className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
           <div>
-            <p className="text-xs tracking-[0.2em] uppercase text-brick-rose font-medium">Reservá tu turno</p>
-            <h1 className="font-display text-2xl font-semibold text-ink-dark mt-1">
+            <p className="text-xs tracking-[0.2em] uppercase text-paper-light font-medium">Reservá tu turno</p>
+            <h1 className="font-display text-2xl font-semibold text-ink mt-1">
               {config?.businessName || 'Mi Negocio'}
             </h1>
           </div>
           <Link
             to="/admin/login"
-            className="text-xs text-brick-rose hover:text-ink/70 transition-colors font-body"
+            className="text-xs text-ink/40 hover:text-ink/70 transition-colors font-body"
           >
             Panel admin
           </Link>
@@ -122,7 +130,7 @@ export default function BookingPage() {
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center border ${
                       done
-                        ? 'bg-ink text-paper border-ink'
+                        ? 'bg-paper-light text-paper'
                         : active
                         ? 'border-brick text-brick'
                         : 'border-ink/20 text-ink/30'
@@ -140,8 +148,8 @@ export default function BookingPage() {
 
         {step === 1 && (
           <section>
-            <h2 className="font-display text-xl text-ink-dark mb-1">Elegí un servicio</h2>
-            <p className="text-ink-dark text-sm mb-6">Seleccioná lo que querés reservar.</p>
+            <h2 className="font-display text-xl text-ink mb-1">Elegí un servicio</h2>
+            <p className="text-ink/50 text-sm mb-6">Seleccioná lo que querés reservar.</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {services.map((s) => (
                 <button
@@ -153,13 +161,13 @@ export default function BookingPage() {
                   className="text-left bg-paper-light border border-ink/10 hover:border-brick/50 rounded-lg p-5 transition-colors group"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-display text-lg text-ink group-hover:text-brick transition-colors">
+                    <h3 className="font-display text-lg text-paper group-hover:text-brick transition-colors">
                       {s.name}
                     </h3>
                     <span className="font-mono text-sm text-ink/50 whitespace-nowrap">{s.duration}′</span>
                   </div>
                   {s.description && <p className="text-sm text-ink/50 mt-1">{s.description}</p>}
-                  <p className="font-mono text-brick mt-3">{formatMoney(s.price)}</p>
+                  <p className="font-mono text-paper mt-3">{formatMoney(s.price)}</p>
                 </button>
               ))}
               {services.length === 0 && (
@@ -205,7 +213,7 @@ export default function BookingPage() {
                       onClick={() => setSelectedSlot(s)}
                       className={`font-mono text-sm px-3 py-2 rounded-md border transition-colors ${
                         selectedSlot?.startTime === s.startTime
-                          ? 'bg-ink text-paper border-ink'
+                          ? 'bg-paper-light text-ink border-paper-light'
                           : 'border-ink/20 text-ink/70 hover:border-brick/50'
                       }`}
                     >
@@ -219,7 +227,7 @@ export default function BookingPage() {
             <button
               disabled={!selectedSlot}
               onClick={() => setStep(3)}
-              className="mt-8 bg-brick text-paper-light px-5 py-2.5 rounded-md font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:bg-brick-dark transition-colors"
+              className="mt-8 bg-paper-light text-paper px-5 py-2.5 rounded-md font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:bg-brick-rose transition-colors"
             >
               Continuar
             </button>
@@ -243,7 +251,7 @@ export default function BookingPage() {
                   required
                   value={form.clientName}
                   onChange={(e) => setForm({ ...form, clientName: e.target.value })}
-                  className="w-full border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+                  className="w-full border border-paper-light/80 rounded-md px-3 py-2 bg-paper focus:outline-none focus:ring-2 focus:ring-brick/40"
                 />
               </div>
               <div>
@@ -253,7 +261,7 @@ export default function BookingPage() {
                   type="email"
                   value={form.clientEmail}
                   onChange={(e) => setForm({ ...form, clientEmail: e.target.value })}
-                  className="w-full border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+                  className="w-full border border-paper-light/80 rounded-md px-3 py-2 bg-paper focus:outline-none focus:ring-2 focus:ring-brick/40"
                 />
               </div>
               <div>
@@ -262,7 +270,7 @@ export default function BookingPage() {
                   required
                   value={form.clientPhone}
                   onChange={(e) => setForm({ ...form, clientPhone: e.target.value })}
-                  className="w-full border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+                  className="w-full border border-paper-light/80 rounded-md px-3 py-2 bg-paper focus:outline-none focus:ring-2 focus:ring-brick/40"
                 />
               </div>
               <div>
@@ -273,7 +281,7 @@ export default function BookingPage() {
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   rows={3}
-                  className="w-full border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+                  className="w-full border border-paper-light/80 rounded-md px-3 py-2 bg-paper focus:outline-none focus:ring-2 focus:ring-brick/40"
                 />
               </div>
 
@@ -281,7 +289,7 @@ export default function BookingPage() {
 
               <button
                 disabled={submitting}
-                className="bg-brick text-paper-light px-5 py-2.5 rounded-md font-medium disabled:opacity-50 hover:bg-brick-dark transition-colors"
+                className="bg-paper-light text-paper px-5 py-2.5 rounded-md font-medium disabled:opacity-50 hover:bg-brick-rose transition-colors"
               >
                 {submitting ? 'Confirmando…' : 'Confirmar reserva'}
               </button>
@@ -291,24 +299,24 @@ export default function BookingPage() {
 
         {step === 4 && confirmed && (
           <section className="flex flex-col items-center py-6">
-            <div className="ticket-stub bg-ink text-paper-light rounded-lg w-full max-w-sm overflow-hidden">
+            <div className="ticket-stub bg-ink-soft text-paper rounded-lg w-full max-w-sm overflow-hidden">
               <div className="p-6">
-                <p className="text-xs uppercase tracking-[0.2em] text-brass font-mono">Turno confirmado</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-paper font-mono">Turno confirmado</p>
                 <h2 className="font-display text-2xl mt-2">{confirmed.serviceName}</h2>
-                <div className="mt-4 space-y-1 font-mono text-sm text-paper-light/80">
+                <div className="mt-4 space-y-1 font-mono text-sm text-paper">
                   <p>
-                    {WEEKDAY_LABELS[new Date(confirmed.start).getDay()]} {confirmed.date}
+                    {WEEKDAY_LABELS[weekdayFromDateString(confirmed.date)]} {confirmed.date}
                   </p>
                   <p>{confirmed.startTime} – {confirmed.endTime} hs</p>
                   <p>{formatMoney(confirmed.price)}</p>
                 </div>
               </div>
-              <div className="border-t border-dashed border-paper-light/30 px-6 py-3 flex items-center justify-between text-xs font-mono text-paper-light/50">
+              <div className="border-t border-dashed border-paper-light/30 px-6 py-3 flex items-center justify-between text-xs font-mono text-paper">
                 <span>Reserva #{confirmed._id.slice(-6).toUpperCase()}</span>
                 <span>{confirmed.clientName}</span>
               </div>
             </div>
-            <p className="text-ink/50 text-sm mt-6 text-center max-w-sm">
+            <p className="text-ink/70 text-sm mt-6 text-center max-w-sm">
               Te enviamos los detalles a {confirmed.clientEmail}. Si necesitás cancelar o cambiar el turno, contactá
               al negocio directamente.
             </p>

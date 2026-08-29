@@ -23,6 +23,21 @@ gestor-reservas/
 - **Notificaciones automáticas por WhatsApp** (vía Twilio) al confirmarse una reserva:
   - Al cliente: confirmación con fecha, horario, servicio y precio.
   - Al negocio: aviso de nueva reserva con los datos del cliente.
+- **Exportar historial**: desde el panel admin → Exportar, se descarga un CSV con todos los turnos de un rango de fechas (fecha, horario, cliente, servicio, precio, estado). Se abre directo en Excel o Google Sheets.
+
+## Uso en PC y celular
+
+Es una aplicación web responsive: no hace falta instalar nada ni publicarla en una tienda de apps. El cliente reserva desde el navegador de su celular (o PC), y el dueño gestiona los turnos desde el navegador de su celular o PC — como los datos viven en MongoDB (centralizado en el servidor), ambos ven siempre la misma información actualizada. Ya está pensada con diseño adaptable (mobile-first en la página de reserva, y el panel admin también se ajusta a pantallas chicas).
+
+Si más adelante querés que se pueda "instalar" en el celular con ícono propio (PWA), es un agregado liviano sobre lo que ya existe — avisame cuando quieras sumarlo.
+
+## Robustez para producción
+
+Estos tres puntos ya están resueltos en el código:
+
+1. **Reservas dobles**: hay un índice único en MongoDB sobre `(fecha, horario)` para turnos activos. Si dos personas reservan el mismo horario casi al mismo tiempo, la base de datos rechaza la segunda automáticamente (no depende solo de la validación en el código, que sí puede tener una carrera).
+2. **Zona horaria**: los turnos se calculan con un offset fijo configurable (`BUSINESS_UTC_OFFSET_MINUTES` en `.env`, por defecto -180 = Argentina), en vez de depender de la zona horaria del servidor. Esto importa porque muchos hostings (Render, Railway) corren en UTC por defecto — sin este fix, los turnos podrían quedar guardados con varias horas de diferencia.
+3. **Validación de datos en el backend**: todos los endpoints (crear/editar reserva, servicios, login) validan formato y tipos con `express-validator`, no solo confían en que el formulario de React mande datos correctos. Esto cubre el caso de que alguien le pegue directo a la API sin pasar por la interfaz.
 
 ## WhatsApp (Twilio)
 

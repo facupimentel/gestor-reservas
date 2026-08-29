@@ -59,7 +59,7 @@ export default function AdminSettings() {
           className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white mb-4"
         />
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="block text-xs uppercase tracking-wide text-ink/50 mb-1 font-mono">
               Duración de grilla (min)
@@ -101,13 +101,13 @@ export default function AdminSettings() {
 
       <div className="bg-paper-light border border-ink/10 rounded-lg p-5 mb-6">
         <h3 className="font-display text-ink mb-4">Días y horarios de atención</h3>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {config.weeklySchedule
             .slice()
             .sort((a, b) => a.day - b.day)
             .map((d) => (
-              <div key={d.day} className="flex items-center gap-4">
-                <label className="flex items-center gap-2 w-32">
+              <div key={d.day} className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <label className="flex items-center gap-2 w-28 sm:w-32 shrink-0">
                   <input
                     type="checkbox"
                     checked={d.isOpen}

@@ -22,6 +22,13 @@ const appointmentSchema = new mongoose.Schema(
     start: { type: Date, required: true }, // datetime completo, para ordenar/consultar
     end: { type: Date, required: true },
 
+    // Clave de bloqueo de horario: "YYYY-MM-DD_HH:mm". Solo se setea mientras el turno
+    // está activo (no cancelado). Un índice único sobre este campo es lo que evita, a
+    // nivel de base de datos, que dos reservas simultáneas se queden con el mismo horario
+    // (una simple validación en el código no alcanza: dos requests pueden pasar el chequeo
+    // al mismo tiempo, justo antes de guardar). Al cancelar, se limpia para liberar el horario.
+    slotKey: { type: String, default: undefined },
+
     status: {
       type: String,
       enum: ['pending', 'confirmed', 'cancelled', 'completed'],
@@ -34,5 +41,8 @@ const appointmentSchema = new mongoose.Schema(
 
 appointmentSchema.index({ start: 1, end: 1 });
 appointmentSchema.index({ date: 1 });
+// sparse: el índice solo aplica a documentos que tengan slotKey definido (turnos activos),
+// así que al cancelar (y borrar el campo) el horario queda libre para nuevas reservas.
+appointmentSchema.index({ slotKey: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

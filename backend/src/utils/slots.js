@@ -23,7 +23,12 @@ const dateStringToWeekday = (dateStr) => {
 const buildDateTime = (dateStr, timeStr) => {
   const [y, m, d] = dateStr.split('-').map(Number);
   const [h, min] = timeStr.split(':').map(Number);
-  return new Date(y, m - 1, d, h, min, 0, 0);
+
+  // Se calcula el instante UTC exacto a partir del offset configurado del negocio,
+  // en vez de usar la zona horaria del servidor (que en muchos hostings es UTC y
+  // haría que los turnos queden guardados con varias horas de diferencia).
+  const offsetMinutes = Number(process.env.BUSINESS_UTC_OFFSET_MINUTES ?? -180); // -180 = UTC-3 (Argentina)
+  return new Date(Date.UTC(y, m - 1, d, h, min) - offsetMinutes * 60000);
 };
 
 /**

@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminServices from './pages/AdminServices';
 import AdminSettings from './pages/AdminSettings';
 import AdminSchedulePrint from './pages/AdminSchedulePrint';
+import AdminExport from './pages/AdminExport';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="cronograma" element={<AdminSchedulePrint />} />
             <Route path="servicios" element={<AdminServices />} />
             <Route path="horarios" element={<AdminSettings />} />
+            <Route path="exportar" element={<AdminExport />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

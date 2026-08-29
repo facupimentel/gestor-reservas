@@ -119,22 +119,35 @@ const createAppointment = async (req, res, next) => {
     const start = buildDateTime(date, chosenSlot.startTime);
     const end = buildDateTime(date, chosenSlot.endTime);
 
-    const appointment = await Appointment.create({
-      service: service._id,
-      serviceName: service.name,
-      duration: service.duration,
-      price: service.price,
-      clientName,
-      clientEmail,
-      clientPhone,
-      notes: notes || '',
-      date,
-      startTime: chosenSlot.startTime,
-      endTime: chosenSlot.endTime,
-      start,
-      end,
-      status: 'confirmed',
-    });
+    let appointment;
+    try {
+      appointment = await Appointment.create({
+        service: service._id,
+        serviceName: service.name,
+        duration: service.duration,
+        price: service.price,
+        clientName,
+        clientEmail,
+        clientPhone,
+        notes: notes || '',
+        date,
+        startTime: chosenSlot.startTime,
+        endTime: chosenSlot.endTime,
+        start,
+        end,
+        slotKey: `${date}_${chosenSlot.startTime}`,
+        status: 'confirmed',
+      });
+    } catch (err) {
+      // Código 11000 = choque contra el índice único de slotKey: alguien reservó
+      // ese mismo horario en el instante entre que chequeamos disponibilidad y guardamos.
+      if (err.code === 11000) {
+        return res.status(409).json({
+          message: 'Ese horario acaba de ser reservado por otra persona. Por favor elegí otro.',
+        });
+      }
+      throw err;
+    }
 
     // Notificaciones por WhatsApp: no bloquean ni rompen la respuesta si fallan
     const notifications = [];
@@ -196,12 +209,33 @@ const updateAppointmentStatus = async (req, res, next) => {
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Estado inválido' });
     }
-    const appointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
-      { status, cancelReason: status === 'cancelled' ? cancelReason || '' : '' },
-      { new: true }
-    );
+
+    const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ message: 'Turno no encontrado' });
+
+    appointment.status = status;
+    appointment.cancelReason = status === 'cancelled' ? cancelReason || '' : '';
+
+    if (status === 'cancelled') {
+      // Libera el horario: al borrar slotKey, el índice único deja de aplicar sobre este documento
+      appointment.slotKey = undefined;
+    } else if (!appointment.slotKey) {
+      // Reactivar un turno cancelado: hay que volver a tomar el horario (puede fallar si
+      // alguien más lo ocupó mientras tanto)
+      appointment.slotKey = `${appointment.date}_${appointment.startTime}`;
+    }
+
+    try {
+      await appointment.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({
+          message: 'No se puede reactivar: ese horario ya fue tomado por otra reserva.',
+        });
+      }
+      throw err;
+    }
+
     res.json(appointment);
   } catch (error) {
     next(error);
@@ -249,6 +283,9 @@ const updateAppointment = async (req, res, next) => {
       appointment.endTime = chosenSlot.endTime;
       appointment.start = buildDateTime(date, chosenSlot.startTime);
       appointment.end = buildDateTime(date, chosenSlot.endTime);
+      if (appointment.status !== 'cancelled') {
+        appointment.slotKey = `${date}_${chosenSlot.startTime}`;
+      }
     }
 
     if (clientName) appointment.clientName = clientName;
@@ -256,7 +293,14 @@ const updateAppointment = async (req, res, next) => {
     if (clientPhone) appointment.clientPhone = clientPhone;
     if (notes !== undefined) appointment.notes = notes;
 
-    await appointment.save();
+    try {
+      await appointment.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({ message: 'Ese horario ya fue tomado por otra reserva.' });
+      }
+      throw err;
+    }
     res.json(appointment);
   } catch (error) {
     next(error);
@@ -298,6 +342,76 @@ const sendDailyScheduleWhatsApp = async (req, res, next) => {
   }
 };
 
+// GET /api/appointments/export  (admin) - descarga CSV de turnos en un rango de fechas
+const escapeCsv = (value) => {
+  if (value === null || value === undefined) return '';
+  const str = String(value);
+  if (/[",\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+const STATUS_LABEL = {
+  pending: 'Pendiente',
+  confirmed: 'Confirmado',
+  cancelled: 'Cancelado',
+  completed: 'Completado',
+};
+
+const exportAppointments = async (req, res, next) => {
+  try {
+    const { from, to, status } = req.query;
+    const filter = {};
+    if (from || to) {
+      filter.date = {};
+      if (from) filter.date.$gte = from;
+      if (to) filter.date.$lte = to;
+    }
+    if (status) filter.status = status;
+
+    const appointments = await Appointment.find(filter).sort({ start: 1 });
+
+    const headers = [
+      'Fecha',
+      'Hora inicio',
+      'Hora fin',
+      'Cliente',
+      'Email',
+      'Teléfono',
+      'Servicio',
+      'Precio',
+      'Estado',
+      'Notas',
+      'Reservado el',
+    ];
+    const rows = appointments.map((a) => [
+      a.date,
+      a.startTime,
+      a.endTime,
+      a.clientName,
+      a.clientEmail,
+      a.clientPhone,
+      a.serviceName,
+      a.price,
+      STATUS_LABEL[a.status] || a.status,
+      a.notes,
+      a.createdAt.toISOString(),
+    ]);
+
+    const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n');
+    // BOM al inicio para que Excel detecte UTF-8 y no rompa los acentos/ñ
+    const csvWithBom = '\uFEFF' + csv;
+
+    const filename = `turnos_${from || 'inicio'}_a_${to || 'hoy'}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvWithBom);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAvailability,
   createAppointment,
@@ -306,4 +420,5 @@ module.exports = {
   updateAppointmentStatus,
   updateAppointment,
   sendDailyScheduleWhatsApp,
+  exportAppointments,
 };

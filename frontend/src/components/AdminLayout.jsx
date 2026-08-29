@@ -6,6 +6,7 @@ const links = [
   { to: '/admin/cronograma', label: 'Cronograma' },
   { to: '/admin/servicios', label: 'Servicios' },
   { to: '/admin/horarios', label: 'Horarios' },
+  { to: '/admin/exportar', label: 'Exportar' },
 ];
 
 export default function AdminLayout() {
@@ -30,14 +31,14 @@ export default function AdminLayout() {
             Cerrar sesión
           </button>
         </div>
-        <nav className="max-w-6xl mx-auto px-6 flex gap-6 border-t border-paper-light/10">
+        <nav className="max-w-6xl mx-auto px-6 flex gap-5 sm:gap-6 border-t border-paper-light/10 overflow-x-auto">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.end}
               className={({ isActive }) =>
-                `py-3 text-sm border-b-2 transition-colors ${
+                `py-3 text-sm border-b-2 transition-colors whitespace-nowrap ${
                   isActive
                     ? 'border-brick text-paper-light'
                     : 'border-transparent text-paper-light/50 hover:text-paper-light'
@@ -49,7 +50,7 @@ export default function AdminLayout() {
           ))}
         </nav>
       </header>
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Outlet />
       </main>
     </div>

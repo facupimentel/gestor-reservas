@@ -5,21 +5,20 @@ export default {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#fef8f6',
-          dark: "#1B2A2E",
-          soft: '#FFB3C6',
+          DEFAULT: '#1B2A2E',
+          soft: '#7B1738',
         },
         paper: {
-          DEFAULT: '#FDF3F0',
+          DEFAULT: '#fbf7f7',
           light: '#FFB3C6',
         },
         brick: {
-          DEFAULT: '#1B2A2E',
+          DEFAULT: '#C2185B ',
           rose: '#FF7096',
         },
         brass: {
-          DEFAULT: '#9C7A34',
-          light: '#C9A85E',
+          DEFAULT: '#F5CFC8',
+          light: '#C87870',
         },
         forest: '#3F6B52',
       },
