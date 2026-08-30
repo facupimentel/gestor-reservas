@@ -62,7 +62,7 @@ export default function AdminSchedulePrint() {
           type="date"
           value={date}
           onChange={(e) => setSearchParams({ date: e.target.value })}
-          className="border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+          className="border border-ink/20 rounded-md px-3 py-2 bg-ink text-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
         />
       </div>
 

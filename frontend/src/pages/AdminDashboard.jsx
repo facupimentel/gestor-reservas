@@ -51,12 +51,12 @@ export default function AdminDashboard() {
             {appointments.length} turno{appointments.length !== 1 ? 's' : ''} · {formatMoney(totalDelDia)} estimado
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="border border-ink/20 rounded-md px-3 py-2 bg-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
+            className="border border-ink/20 rounded-md px-3 py-2 bg-ink text-paper-light focus:outline-none focus:ring-2 focus:ring-brick/40"
           />
           <Link
             to={`/admin/cronograma?date=${date}`}

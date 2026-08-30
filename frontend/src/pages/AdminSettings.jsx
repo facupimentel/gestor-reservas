@@ -56,7 +56,7 @@ export default function AdminSettings() {
         <input
           value={config.businessName}
           onChange={(e) => setConfig({ ...config, businessName: e.target.value })}
-          className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white mb-4"
+          className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white mb-4 text-ink/40"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -69,7 +69,7 @@ export default function AdminSettings() {
               min={5}
               value={config.slotDuration}
               onChange={(e) => setConfig({ ...config, slotDuration: Number(e.target.value) })}
-              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white"
+              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white text-ink/40"
             />
           </div>
           <div>
@@ -81,7 +81,7 @@ export default function AdminSettings() {
               min={0}
               value={config.bufferBetweenAppointments}
               onChange={(e) => setConfig({ ...config, bufferBetweenAppointments: Number(e.target.value) })}
-              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white"
+              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white text-ink/40"
             />
           </div>
           <div>
@@ -93,7 +93,7 @@ export default function AdminSettings() {
               min={1}
               value={config.advanceBookingDays}
               onChange={(e) => setConfig({ ...config, advanceBookingDays: Number(e.target.value) })}
-              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white"
+              className="w-full border border-ink/20 rounded-md px-3 py-2 bg-white text-ink/40"
             />
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function AdminSettings() {
             .slice()
             .sort((a, b) => a.day - b.day)
             .map((d) => (
-              <div key={d.day} className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <div key={d.day} className="flex flex-wrap items-center gap-1 sm:gap-4">
                 <label className="flex items-center gap-2 w-28 sm:w-32 shrink-0">
                   <input
                     type="checkbox"
@@ -146,7 +146,7 @@ export default function AdminSettings() {
           />
           <button
             onClick={addClosedDate}
-            className="px-3 py-2 rounded-md border border-ink/20 text-sm text-ink/70 hover:bg-ink/5"
+            className="bg-paper px-3 py-2 rounded-md border border-ink/20 text-sm text-ink hover:bg-ink/5 hover:text-paper"
           >
             Agregar
           </button>

@@ -70,7 +70,7 @@ export default function AdminServices() {
         <h2 className="font-display text-2xl text-ink">Servicios</h2>
         <button
           onClick={openNew}
-          className="bg-brick text-paper-light px-4 py-2 rounded-md text-sm font-medium hover:bg-brick-dark transition-colors"
+          className="text-paper-light px-4 py-2 rounded-md text-sm font-medium hover:bg-brick-dark transition-colors"
         >
           + Nuevo servicio
         </button>

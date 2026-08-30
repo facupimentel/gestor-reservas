@@ -25,9 +25,9 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-ink flex items-center justify-center px-6">
+    <div className="min-h-screen bg-ink-soft flex items-center justify-center px-6">
       <form onSubmit={handleSubmit} className="bg-paper-light rounded-lg p-8 w-full max-w-sm">
-        <p className="text-xs uppercase tracking-[0.2em] text-brick font-medium">Panel admin</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-ink-soft font-medium">Panel admin</p>
         <h1 className="font-display text-2xl text-ink mt-1 mb-6">Iniciar sesión</h1>
 
         <label className="block text-xs uppercase tracking-wide text-ink/50 mb-1 font-mono">Email</label>
@@ -52,7 +52,7 @@ export default function AdminLogin() {
 
         <button
           disabled={loading}
-          className="w-full bg-ink text-paper-light py-2.5 rounded-md font-medium hover:bg-ink-soft transition-colors disabled:opacity-50"
+          className="w-full bg-ink-soft text-paper-light py-2.5 rounded-md font-medium hover:bg-ink-soft transition-colors disabled:opacity-50"
         >
           {loading ? 'Ingresando…' : 'Ingresar'}
         </button>

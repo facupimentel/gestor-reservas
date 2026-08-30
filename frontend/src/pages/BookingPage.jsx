@@ -179,7 +179,7 @@ export default function BookingPage() {
 
         {step === 2 && selectedService && (
           <section>
-            <button onClick={() => setStep(1)} className="text-xs text-ink/40 hover:text-ink mb-4 font-mono">
+            <button onClick={() => setStep(1)} className="flex text-xs text-ink/40 hover:text-ink mb-4 font-mono">
               ← Cambiar servicio
             </button>
             <h2 className="font-display text-xl text-ink mb-1">Elegí día y horario</h2>
@@ -206,7 +206,7 @@ export default function BookingPage() {
                 {!loadingSlots && slots.length === 0 && (
                   <p className="text-sm text-ink/40">No hay horarios disponibles ese día. Probá otra fecha.</p>
                 )}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-5 ">
                   {slots.map((s) => (
                     <button
                       key={s.startTime}

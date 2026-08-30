@@ -18,15 +18,15 @@ export default function AdminLayout() {
       <header className="bg-ink text-paper-light print:hidden">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-brass font-mono">Panel admin</p>
-            <h1 className="font-display text-lg">Hola, {user?.name}</h1>
+            <p className="text-xs uppercase tracking-[0.2em] font-mono">Panel admin</p>
+            <h1 className="font-display text-lg text-paper">Hola, {user?.name}</h1>
           </div>
           <button
             onClick={() => {
               logout();
               navigate('/admin/login');
             }}
-            className="text-sm text-paper-light/60 hover:text-paper-light transition-colors"
+            className="text-sm text-paper/60 hover:text-paper-light transition-colors"
           >
             Cerrar sesión
           </button>
